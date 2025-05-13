@@ -1,0 +1,18 @@
+server:
+  port: 8181
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/cars
+    username: root
+    password: dydd3310
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+
+
+
+## lombok.*   bu ??kild? olmas?n. settings d?n tap d?yi? ham?s?n? ard?c?l göst?rsin
+##  fetchType, cascadeType
+##   UserService ->  update, delete, getUSer, getUsers(Pagination)
