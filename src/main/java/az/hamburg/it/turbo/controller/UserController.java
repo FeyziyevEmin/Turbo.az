@@ -1,6 +1,6 @@
 package az.hamburg.it.turbo.controller;
 
-import az.hamburg.it.turbo.model.request.CreateOrUptadeUserRequest;
+import az.hamburg.it.turbo.model.request.UserRequest;
 import az.hamburg.it.turbo.model.response.UserResponse;
 import az.hamburg.it.turbo.service.abstraction.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import static lombok.AccessLevel.PRIVATE;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
-@RequestMapping("v1/users")
+@RequestMapping("/v1/users")
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class UserController {
@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public void saveUser(@RequestBody CreateOrUptadeUserRequest request){
+    public void saveUser(@RequestBody UserRequest request){
         userService.saveUser(request);
     }
 
@@ -39,7 +39,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
-    public void updateUser(@PathVariable Long id, @RequestBody CreateOrUptadeUserRequest request) {
+    public void updateUser(@PathVariable Long id, @RequestBody UserRequest request) {
         userService.updateUser(id, request);
     }
 

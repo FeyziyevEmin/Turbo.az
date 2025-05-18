@@ -1,6 +1,7 @@
 package az.hamburg.it.turbo.controller;
 
-import az.hamburg.it.turbo.model.request.CreateOrUptadeCarRequest;
+import az.hamburg.it.turbo.model.request.CarRequest;
+import az.hamburg.it.turbo.model.response.CarPageResponse;
 import az.hamburg.it.turbo.model.response.CarResponse;
 import az.hamburg.it.turbo.service.abstraction.CarService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class CarController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public void saveCar(@RequestBody CreateOrUptadeCarRequest request){
+    public void saveCar(@RequestBody CarRequest request){
         carService.saveCar(request);
     }
 
@@ -40,13 +41,13 @@ public class CarController {
 
     @PutMapping("/{id}")
     @ResponseStatus(OK)
-    public void updateCar(@PathVariable Long id, @RequestBody CreateOrUptadeCarRequest request) {
+    public void updateCar(@PathVariable Long id, @RequestBody CarRequest request) {
         carService.updateCar(id, request);
     }
 
     @GetMapping
     @ResponseStatus(OK)
-    public List<CarResponse> getAll() {
-        return carService.getAll();
+    public CarPageResponse  getAll(@RequestParam(value = "page") int page, @RequestParam(value = "count") int count) {
+        return carService.getAll(page,count);
     }
 }

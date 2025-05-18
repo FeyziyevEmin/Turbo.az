@@ -1,6 +1,5 @@
-package az.hamburg.it.turbo.model.request;
+package az.hamburg.it.turbo.model.uptade;
 
-import az.hamburg.it.turbo.dao.entity.UserEntity;
 import az.hamburg.it.turbo.model.enums.carEnums.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateOrUptadeCarRequest {
+public class CarUptade {
     String brand;
     String model;
     Integer year;
@@ -35,4 +34,5 @@ public class CreateOrUptadeCarRequest {
     String description;
 
     Long userId;
+
 }

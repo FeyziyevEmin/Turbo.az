@@ -3,11 +3,9 @@ package az.hamburg.it.turbo.service.concrete;
 import az.hamburg.it.turbo.dao.entity.UserEntity;
 import az.hamburg.it.turbo.dao.repository.UserRepository;
 import az.hamburg.it.turbo.exception.NotFoundException;
-import az.hamburg.it.turbo.mapper.UserMapper;
-import az.hamburg.it.turbo.model.request.CreateOrUptadeUserRequest;
+import az.hamburg.it.turbo.model.request.UserRequest;
 import az.hamburg.it.turbo.model.response.UserResponse;
 import az.hamburg.it.turbo.service.abstraction.UserService;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -17,15 +15,16 @@ import java.util.List;
 import static az.hamburg.it.turbo.exception.ExceptionConstants.USER_NOT_FOUND;
 import static az.hamburg.it.turbo.mapper.UserMapper.USER_MAPPER;
 import static az.hamburg.it.turbo.model.enums.Status.DELETED;
+import static lombok.AccessLevel.*;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class UserServiceHandler implements UserService {
     UserRepository userRepository;
 
     @Override
-    public void saveUser(CreateOrUptadeUserRequest request) {
+    public void saveUser(UserRequest request) {
         UserEntity userEntity = USER_MAPPER.buildUserEntity(request);
         userRepository.save(userEntity);
     }
@@ -38,7 +37,7 @@ public class UserServiceHandler implements UserService {
     }
 
     @Override
-    public void updateUser(Long id, CreateOrUptadeUserRequest request) {
+    public void updateUser(Long id, UserRequest request) {
         UserEntity userEntity = fetchUserIfExist(id);
         USER_MAPPER.uptadeUser(userEntity, request);
         userRepository.save(userEntity);

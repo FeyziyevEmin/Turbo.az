@@ -1,15 +1,20 @@
 package az.hamburg.it.turbo.dao.entity;
 
 import az.hamburg.it.turbo.model.enums.Status;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -20,6 +25,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Entity
 @EqualsAndHashCode(of = "id")
 @Builder
+@Where(clause = "Status <> 'DELETED'")
 @Table(name = "listings")
 @FieldDefaults(level = PRIVATE)
 public class ListingEntity {
@@ -36,11 +42,13 @@ public class ListingEntity {
     LocalDateTime updatedAt;
 
     @Enumerated(STRING)
-    private Status status;
+    Status status;
 
-    @OneToOne(mappedBy = "listing", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private CarEntity car;
+    @OneToOne(mappedBy = "listing", fetch = LAZY, cascade = {PERSIST, MERGE})
+            @JsonBackReference
+    CarEntity car;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private UserEntity user;
+    @ManyToOne(fetch = LAZY, cascade = MERGE)
+     @JsonBackReference
+    UserEntity user;
 }

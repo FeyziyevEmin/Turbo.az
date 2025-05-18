@@ -2,13 +2,13 @@ package az.hamburg.it.turbo.mapper;
 
 import az.hamburg.it.turbo.dao.entity.UserEntity;
 import az.hamburg.it.turbo.model.enums.Status;
-import az.hamburg.it.turbo.model.request.CreateOrUptadeUserRequest;
+import az.hamburg.it.turbo.model.request.UserRequest;
 import az.hamburg.it.turbo.model.response.UserResponse;
 
 public enum UserMapper {
     USER_MAPPER;
 
-    public UserEntity buildUserEntity(CreateOrUptadeUserRequest request){
+    public UserEntity buildUserEntity(UserRequest request){
         return UserEntity.builder()
                 .name(request.getName())
                 .surname(request.getSurname())
@@ -18,7 +18,6 @@ public enum UserMapper {
                 .role(request.getRole())
                 .location(request.getLocation())
                 .status(Status.ACTIVE)
-                .cars(request.getCars())
                 .build();
     }
 
@@ -38,7 +37,7 @@ public enum UserMapper {
                 .build();
     }
 
-    public void uptadeUser(UserEntity userEntity, CreateOrUptadeUserRequest request){
+    public void uptadeUser(UserEntity userEntity, UserRequest request){
         userEntity.setName(request.getName());
         userEntity.setSurname(request.getSurname());
         userEntity.setEmail(request.getEmail());

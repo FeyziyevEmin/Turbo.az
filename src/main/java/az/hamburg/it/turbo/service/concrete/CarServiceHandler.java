@@ -2,27 +2,23 @@ package az.hamburg.it.turbo.service.concrete;
 
 import az.hamburg.it.turbo.dao.entity.CarEntity;
 import az.hamburg.it.turbo.dao.repository.CarRepository;
+import az.hamburg.it.turbo.dao.repository.LocationRepository;
 import az.hamburg.it.turbo.dao.repository.UserRepository;
-import az.hamburg.it.turbo.exception.ExceptionConstants;
 import az.hamburg.it.turbo.exception.NotFoundException;
-import az.hamburg.it.turbo.mapper.CarMapper;
-import az.hamburg.it.turbo.mapper.UserMapper;
 import az.hamburg.it.turbo.model.enums.Status;
-import az.hamburg.it.turbo.model.request.CreateOrUptadeCarRequest;
+import az.hamburg.it.turbo.model.request.CarRequest;
+import az.hamburg.it.turbo.model.response.CarPageResponse;
 import az.hamburg.it.turbo.model.response.CarResponse;
-import az.hamburg.it.turbo.model.response.UserResponse;
 import az.hamburg.it.turbo.service.abstraction.CarService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-import static az.hamburg.it.turbo.exception.ExceptionConstants.CAR_NOT_FOUND;
-import static az.hamburg.it.turbo.exception.ExceptionConstants.USER_NOT_FOUND;
+import static az.hamburg.it.turbo.exception.ExceptionConstants.*;
 import static az.hamburg.it.turbo.mapper.CarMapper.CAR_MAPPER;
-
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -30,12 +26,14 @@ import static az.hamburg.it.turbo.mapper.CarMapper.CAR_MAPPER;
 public class CarServiceHandler implements CarService {
     CarRepository carRepository;
     UserRepository userRepository;
-
+    LocationRepository locationRepository;
     @Override
-    public void saveCar(CreateOrUptadeCarRequest request) {
+    public void saveCar(CarRequest request) {
         var userEntity = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NotFoundException((USER_NOT_FOUND.getCode()), USER_NOT_FOUND.getMessage()));
-        CarEntity carEntity= CAR_MAPPER.buildCarEntity(request, userEntity);
+        var locationEntity = locationRepository.findById(request.getLocationId())
+                .orElseThrow(()-> new NotFoundException((LOCATION_NOT_FOUND.getCode()),LOCATION_NOT_FOUND.getMessage()));
+        var carEntity = CAR_MAPPER.buildCarEntity(request, userEntity, locationEntity);
         carRepository.save(carEntity);
     }
 
@@ -49,22 +47,24 @@ public class CarServiceHandler implements CarService {
     @Override
     public CarResponse getCar(Long id) {
         CarEntity carEntity = fetchCarIfExist(id);
-         return CAR_MAPPER.buildCarResponse(carEntity);
+        return CAR_MAPPER.buildCarResponse(carEntity);
     }
 
     @Override
-    public void updateCar(Long id, CreateOrUptadeCarRequest request) {
+    public void updateCar(Long id, CarRequest request) {
         CarEntity carEntity = fetchCarIfExist(id);
-        CAR_MAPPER.uptadeCar(carEntity,request);
+        CAR_MAPPER.updateCar(carEntity, request);
         carRepository.save(carEntity);
     }
 
     @Override
-    public List<CarResponse> getAll() {
-        return carRepository.findAll()
-                .stream()
-                .map(CAR_MAPPER::buildCarResponse)
-                .toList();
+    public CarPageResponse getAll(int page, int count) {
+        Page<CarEntity> pagedCar = carRepository.findAll(PageRequest.of(page, count));
+        return new CarPageResponse(
+                pagedCar.stream().map(CAR_MAPPER::buildCarResponse).toList(),
+                pagedCar.getTotalElements(),
+                pagedCar.getTotalPages(),
+                pagedCar.hasNext());
     }
 
     private CarEntity fetchCarIfExist(Long id) {

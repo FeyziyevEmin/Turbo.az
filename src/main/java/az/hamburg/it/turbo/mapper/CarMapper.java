@@ -1,15 +1,16 @@
 package az.hamburg.it.turbo.mapper;
 
 import az.hamburg.it.turbo.dao.entity.CarEntity;
+import az.hamburg.it.turbo.dao.entity.LocationEntity;
 import az.hamburg.it.turbo.dao.entity.UserEntity;
 import az.hamburg.it.turbo.model.enums.Status;
-import az.hamburg.it.turbo.model.request.CreateOrUptadeCarRequest;
+import az.hamburg.it.turbo.model.request.CarRequest;
 import az.hamburg.it.turbo.model.response.CarResponse;
 
 public enum CarMapper {
     CAR_MAPPER;
 
-    public CarEntity buildCarEntity(CreateOrUptadeCarRequest request, UserEntity user){
+    public CarEntity buildCarEntity(CarRequest request, UserEntity user, LocationEntity location){
         return CarEntity.builder()
                 .brand(request.getBrand())
                 .model(request.getModel())
@@ -30,6 +31,7 @@ public enum CarMapper {
                 .owner(request.getOwner())
                 .description(request.getDescription())
                 .user(user)
+                .location(location)
                 .build();
     }
 
@@ -58,10 +60,11 @@ public enum CarMapper {
                 .createdAt(car.getCreatedAt())
                 .updatedAt(car.getUpdatedAt())
                 .user(car.getUser())
+                .status(Status.ACTIVE)
                 .build();
     }
 
-    public void uptadeCar(CarEntity carEntity, CreateOrUptadeCarRequest request){
+    public void updateCar(CarEntity carEntity, CarRequest request){
         carEntity.setBrand(request.getBrand());
         carEntity.setModel(request.getModel());
         carEntity.setYear(request.getYear());
@@ -82,6 +85,7 @@ public enum CarMapper {
         carEntity.setDescription(request.getDescription());
 
         carEntity.setStatus(Status.IN_PROGRESS);
-//        carEntity.setUser(request.getUser());
+        carEntity.getUser().setId(request.getUserId());
+        carEntity.getLocation().setId(request.getLocationId());
     }
 }

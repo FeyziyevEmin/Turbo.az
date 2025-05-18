@@ -2,6 +2,7 @@ package az.hamburg.it.turbo.dao.entity;
 
 import az.hamburg.it.turbo.model.enums.Status;
 import az.hamburg.it.turbo.model.enums.carEnums.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -11,14 +12,13 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
@@ -27,6 +27,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "Status <> 'DELETED'")
 @Entity
 @EqualsAndHashCode(of = "id")
 @Builder
@@ -37,51 +38,41 @@ public class CarEntity {
     @GeneratedValue(strategy = IDENTITY)
     Long id;
 
-    @NotBlank
     String brand;
 
-    @NotBlank
     String model;
 
     Integer year;
 
     @Enumerated(STRING)
-    @NotNull
     BodyType bodyType;
 
     @Enumerated(STRING)
-    @NotNull
     TransmissionType transmission;
 
-    @NotNull
     Integer horsePower;
 
-    @Min(value = 50, message = "start from 50")
-    @Max(value = 16000, message = "to 16000")
+
     Double engineSize;
 
-    @NotNull
     Double mileage;
 
     @Enumerated(STRING)
     DriveType drivetrain;
 
     @Enumerated(STRING)
-    @NotNull
     FuelType fuelType;
 
     @Enumerated(STRING)
-    @NotNull
     CarColor color;
 
+    @Enumerated(STRING)
     Status status;
 
-    @NotNull
     BigDecimal price;
 
-    @NotBlank
     @Enumerated(STRING)
-    CurrencyType currency;       //$,azn
+    CurrencyType currency;
 
     Boolean barter;
 
@@ -100,12 +91,16 @@ public class CarEntity {
     LocalDateTime updatedAt;
 
     @ManyToOne(fetch = LAZY, cascade = MERGE)
+            @JsonBackReference
     UserEntity user;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY, cascade = MERGE)
+            @JsonBackReference
     LocationEntity location;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "id")
+            @JsonBackReference
     ListingEntity listing;
+
 }
